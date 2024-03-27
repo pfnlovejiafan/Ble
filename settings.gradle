@@ -1,15 +1,21 @@
 pluginManagement {
     repositories {
-        gradlePluginPortal()
         google()
+        jcenter()
+//        maven { url 'https://www.jitpack.io' } 把这个放到下面，立马就好了。
         mavenCentral()
+        maven { url 'https://repo1.maven.org/maven2/' }
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
+        jcenter()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://repo1.maven.org/maven2/' }
+        maven { url "https://oss.jfrog.org/libs-snapshot" }
     }
 }
 rootProject.name = "CeApplication"
