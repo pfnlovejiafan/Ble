@@ -3,8 +3,8 @@ package com.example.ble.bean;
 import android.util.Log;
 
 import com.clj.fastble.data.BleDevice;
-import com.example.myble.Utils.AES;
-import com.example.myble.Utils.BleUtils;
+import com.example.ble.Utils.AES;
+import com.example.ble.Utils.BleUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -253,7 +253,7 @@ public class MSPProtocol {
             totalData = data;
         } else {
             if (totalData!=null){
-                totalData=BleUtils.insertData(totalData,totalData.length,data);
+                totalData= BleUtils.insertData(totalData,totalData.length,data);
             }
         }
     }
