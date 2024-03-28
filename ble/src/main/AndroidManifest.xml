@@ -2,4 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.ble">
 
+    <application>
+        <activity android:name=".bean.BaseActivity" />
+    </application>
 </manifest>

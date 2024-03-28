@@ -3,6 +3,7 @@ package com.example.ble.bean;
 import android.util.Log;
 
 import com.clj.fastble.data.BleDevice;
+import com.example.ble.BluetoothData;
 import com.example.ble.Utils.AES;
 import com.example.ble.Utils.BleUtils;
 
@@ -201,7 +202,10 @@ public class MSPProtocol {
     private int awake_num_left;
     private int awake_num_right;
     private int dianZong;
-
+    private BluetoothData.BluetoothParsingData mBluetoothParsingData;
+    public void setOnBluetoothData(BluetoothData.BluetoothParsingData mBluetoothParsingData) {
+        this.mBluetoothParsingData = mBluetoothParsingData;
+    }
 
     public static MSPProtocol getInstance() {
         return mSPProtocol;
@@ -457,6 +461,9 @@ public class MSPProtocol {
             }
             System.arraycopy(data, index + 1, two, 0, num);
             setValue(two);
+            if (mBluetoothParsingData!=null){
+                mBluetoothParsingData.BluetoothParsingData(mSPProtocol);
+            }
             index = index + num + 1;
         }
     }

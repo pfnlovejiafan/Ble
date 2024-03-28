@@ -2,6 +2,7 @@ package com.example.ble;
 
 import static com.example.ble.Utils.AES.toByteArray;
 
+import android.app.Activity;
 import android.app.Application;
 import android.bluetooth.BluetoothGatt;
 import android.os.Build;
@@ -20,7 +21,9 @@ import com.clj.fastble.data.BleDevice;
 import com.clj.fastble.exception.BleException;
 import com.clj.fastble.scan.BleScanRuleConfig;
 import com.example.ble.Utils.BleUtils;
+import com.example.ble.Utils.PreferenceUtils;
 import com.example.ble.bean.MSPProtocol;
+import com.example.ble.constant.VariableName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +64,8 @@ public class MyApplication extends Application {
         }
         return instance;
     }
-
+    private BluetoothData.BluetoothName mBluetoothData;
+    /*扫描蓝牙*/
     public void Scan() {
         bleDevices.clear();
         if (!BleManager.getInstance().isBlueEnable()) {
@@ -83,8 +87,11 @@ public class MyApplication extends Application {
             @Override
             public void onScanning(BleDevice bleDevice) {
                 bleDevices.add(bleDevice);
-                if (listener != null) {
-                    listener.OnListener(bleDevices);
+
+                if (mBluetoothData != null) {
+                    mBluetoothData.BluetoothName(bleDevices);
+                    Log.e("onScanStarted", "onScanStarted: "+bleDevice);
+
                 }
             }
 
@@ -118,18 +125,16 @@ public class MyApplication extends Application {
                 .build();
         BleManager.getInstance().initScanRule(scanRuleConfig);
     }
-
+/*连接蓝牙*/
     public void connect(BleDevice bleDevice) {
         BleManager.getInstance().connect(bleDevice, new BleGattCallback() {
             @Override
             public void onStartConnect() {
-                Toast.makeText(MyApplication.this, "开始连接", Toast.LENGTH_SHORT).show();
                 Log.e("连接", "连接中");
             }
 
             @Override
             public void onConnectFail(BleDevice bleDevice, BleException exception) {
-                Toast.makeText(MyApplication.this, "连接失败", Toast.LENGTH_SHORT).show();
                 Log.e("连接", "连接失败");
                 handler.postDelayed(() -> {
                     connect(bleDevice);
@@ -139,12 +144,15 @@ public class MyApplication extends Application {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
             @Override
             public void onConnectSuccess(BleDevice bleDevice, BluetoothGatt gatt, int status) {
+                MSPProtocol.getInstance().bleDevice=bleDevice;
+                PreferenceUtils.putString(VariableName.MAC, bleDevice.getMac());
+                PreferenceUtils.putString(VariableName.DEVICE_NAME, bleDevice.getName());
+                handler.postDelayed(() -> MyApplication.instance.read(), 1000);
+
                 Toast.makeText(MyApplication.this, "连接成功", Toast.LENGTH_SHORT).show();
                 Log.e("连接", "连接成功，正在发现服务");
-                MSPProtocol.getInstance().bleDevice = bleDevice;
                 stopScan();
                 write(toByteArray("0f0612" + String.format("%08x", System.currentTimeMillis() / 1000) + "0813" + "13798579241"));
-                read();
             }
 
             @Override
@@ -161,6 +169,7 @@ public class MyApplication extends Application {
             }
         });
     }
+    /*读取数据*/
     public void read() {
         BleManager.getInstance().notify(
                 MSPProtocol.getInstance().bleDevice,
@@ -185,7 +194,7 @@ public class MyApplication extends Application {
     private int errorCode = 0;
     private int numberOfTimes = 5;
 
-
+//发送命令
     public void write(byte[] data){
         byte[] encry = BleUtils.encry(data);//15ef8d0260061a4af020055c3583a111
         BleManager.getInstance().write(
@@ -219,6 +228,7 @@ public class MyApplication extends Application {
                     }
                 });
     }
+    //断开连接
     public void disconnect(){
         if (MSPProtocol.getInstance().bleDevice!=null){
             BleManager.getInstance().disconnect(MSPProtocol.getInstance().bleDevice);
@@ -227,13 +237,10 @@ public class MyApplication extends Application {
         }
     }
 
-    public interface onListener {
-        void OnListener(ArrayList<BleDevice> bleDevices);
+    public static Application getAppInstance() {
+        return instance;
     }
-
-    private onListener listener;
-
-    public void setListener(onListener listener) {
-        this.listener = listener;
+    public void setOnBluetoothData(BluetoothData.BluetoothName mBluetoothData) {
+        this.mBluetoothData = mBluetoothData;
     }
 }
