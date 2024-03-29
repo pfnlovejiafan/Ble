@@ -36,10 +36,6 @@ import java.util.UUID;
  */
 
 public class MyApplication extends Application {
-    //二代蓝牙协议
-    public static final String CL_SERVICE_UUID = "0000FFE0-0000-1000-8000-00805F9B34FB";
-    public static final String CL_TAG_WRITE_UUID = "0000FFE2-0000-1000-8000-00805F9B34FB";
-    public static final String CL_TAG_READ_UUID = "0000FFE1-0000-1000-8000-00805F9B34FB";
     private ArrayList<BleDevice> bleDevices;
     private static MyApplication instance;
     public static Handler handler;
@@ -108,7 +104,7 @@ public class MyApplication extends Application {
 
     private void initBle() {
         //初始化蓝牙
-        UUID[] serviceUuids = {UUID.fromString(CL_SERVICE_UUID)};
+        UUID[] serviceUuids = {UUID.fromString(VariableName.CL_SERVICE_UUID)};
         BleManager.getInstance().init(this);
         BleManager.getInstance()
                 .enableLog(true)
@@ -125,7 +121,7 @@ public class MyApplication extends Application {
                 .build();
         BleManager.getInstance().initScanRule(scanRuleConfig);
     }
-/*连接蓝牙*/
+    /*连接蓝牙*/
     public void connect(BleDevice bleDevice) {
         BleManager.getInstance().connect(bleDevice, new BleGattCallback() {
             @Override
@@ -173,8 +169,8 @@ public class MyApplication extends Application {
     public void read() {
         BleManager.getInstance().notify(
                 MSPProtocol.getInstance().bleDevice,
-                CL_SERVICE_UUID,
-                CL_TAG_READ_UUID, new BleNotifyCallback() {
+                VariableName.CL_SERVICE_UUID,
+                VariableName.CL_TAG_READ_UUID, new BleNotifyCallback() {
 
                     @Override
                     public void onNotifySuccess() {
@@ -199,8 +195,8 @@ public class MyApplication extends Application {
         byte[] encry = BleUtils.encry(data);//15ef8d0260061a4af020055c3583a111
         BleManager.getInstance().write(
                 MSPProtocol.getInstance().bleDevice,
-                CL_SERVICE_UUID,
-                CL_TAG_WRITE_UUID,
+                VariableName.CL_SERVICE_UUID,
+                VariableName.CL_TAG_WRITE_UUID,
                 encry,
                 new BleWriteCallback() {
                     @Override

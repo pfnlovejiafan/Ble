@@ -86,9 +86,6 @@ public class VariableName {
     public static int CONNECT_AUTO_DISCONNECT = 1001;
     public static int CONNECT_MANUAL_DISCONNECT = 1002;
 
-    //高德开放平台API KEY
-    public static String GdKey = "0395f1a26432746cde48aeb5042e885e";
-
 
 
 }
